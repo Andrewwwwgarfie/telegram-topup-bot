@@ -1,0 +1,128 @@
+name: Temporary 24-hour Telegram bot
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: temporary-telegram-bot
+  cancel-in-progress: true
+
+env:
+  BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+  ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
+  SMILE_API_BASE: ${{ secrets.SMILE_API_BASE }}
+  CHECK_API_BASE: ${{ secrets.CHECK_API_BASE }}
+  DB_PATH: bot.db
+  PERSONAL_MODE: ${{ secrets.PERSONAL_MODE }}
+  SMILE_COOKIE: ${{ secrets.SMILE_COOKIE }}
+  STATE_KEY: ${{ secrets.STATE_KEY }}
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  segment-1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 359
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: bash .github/scripts/run-segment.sh 1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: state-1
+          path: state-out/
+          retention-days: 1
+
+  segment-2:
+    needs: segment-1
+    runs-on: ubuntu-latest
+    timeout-minutes: 359
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: state-1
+          path: state-in
+      - run: bash .github/scripts/run-segment.sh 2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: state-2
+          path: state-out/
+          retention-days: 1
+
+  segment-3:
+    needs: segment-2
+    runs-on: ubuntu-latest
+    timeout-minutes: 359
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: state-2
+          path: state-in
+      - run: bash .github/scripts/run-segment.sh 3
+      - uses: actions/upload-artifact@v4
+        with:
+          name: state-3
+          path: state-out/
+          retention-days: 1
+
+  segment-4:
+    needs: segment-3
+    runs-on: ubuntu-latest
+    timeout-minutes: 359
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: state-3
+          path: state-in
+      - run: bash .github/scripts/run-segment.sh 4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: state-4
+          path: state-out/
+          retention-days: 1
+
+  segment-5:
+    needs: segment-4
+    runs-on: ubuntu-latest
+    timeout-minutes: 359
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: state-4
+          path: state-in
+      - run: bash .github/scripts/run-segment.sh 5
+      - uses: actions/upload-artifact@v4
+        with:
+          name: final-state
+          path: state-out/
+          retention-days: 1
