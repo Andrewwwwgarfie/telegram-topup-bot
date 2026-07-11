@@ -4,3 +4,4 @@ __pycache__/
 *.db
 bot.log
 .DS_Store
+.wrangler/
