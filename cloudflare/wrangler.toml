@@ -1,0 +1,9 @@
+name = "telegram-topup-bot"
+main = "src/worker.js"
+compatibility_date = "2026-07-11"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "telegram-topup-bot-db"
+database_id = "557eb0ce-e95b-4700-8634-b9069aa68045"
+

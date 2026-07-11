@@ -31,12 +31,13 @@ Run manually:
 venv/bin/python bot.py
 ```
 
-## Temporary free cloud run (24 hours)
+## Permanent free cloud hosting
 
-The included `Temporary 24-hour Telegram bot` GitHub Actions workflow runs the
-bot in five linked segments and stops automatically 24 hours after it starts.
-The SQLite database is encrypted between segments; credentials and its key are
-stored only as GitHub Actions secrets.
+The production bot is deployed as a Telegram webhook on Cloudflare Workers,
+with persistent data in Cloudflare D1. The deployment files are in
+`cloudflare/`; credentials are stored as encrypted Worker secrets and are never
+committed to this repository. This serverless version does not depend on a Mac
+or an always-running process.
 
 Or as an always-on macOS service (auto-starts on login, restarts on crash,
 keeps the Mac from idle-sleeping via `caffeinate -i`):
